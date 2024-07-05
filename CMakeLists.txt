@@ -10,8 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/include/SDL2)
-include_directories(${CMAKE_SOURCE_DIR}/include/SDL2_image)
 
 # Add source files to this project's executable
 add_executable(PixelGameEngine 
@@ -24,33 +22,27 @@ add_executable(PixelGameEngine
     main.cpp
 )
 
-# Target include directories
-target_include_directories(PixelGameEngine PRIVATE ${CMAKE_SOURCE_DIR}/include)
+# Find SDL2
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+
+# Find SDL2_image
+find_package(SDL2_image REQUIRED)
+include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
 
 # Link SDL2 and SDL2_image libraries
-if(WIN32)
-    # On Windows, link with the prebuilt SDL2 libraries
-    target_link_libraries(PixelGameEngine 
-        ${CMAKE_SOURCE_DIR}/include/SDL2/lib/x64/SDL2.lib 
-        ${CMAKE_SOURCE_DIR}/include/SDL2/lib/x64/SDL2main.lib
-        ${CMAKE_SOURCE_DIR}/include/SDL2_image/lib/x64/SDL2_image.lib
-    )
+target_link_libraries(PixelGameEngine ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 
-    # Copy SDL2.dll and SDL2_image.dll to the output directory
+# On Windows, copy SDL2.dll and SDL2_image.dll to the output directory
+if(WIN32)
     add_custom_command(TARGET PixelGameEngine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/include/SDL2/lib/x64/SDL2.dll"
+        "${SDL2_DLL_PATH}/SDL2.dll"
         $<TARGET_FILE_DIR:PixelGameEngine>
     )
     add_custom_command(TARGET PixelGameEngine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/include/SDL2_image/lib/x64/SDL2_image.dll"
+        "${SDL2_IMAGE_DLL_PATH}/SDL2_image.dll"
         $<TARGET_FILE_DIR:PixelGameEngine>
     )
-else()
-    # On non-Windows platforms, find and link SDL2 and SDL2_image dynamically
-    find_package(SDL2 REQUIRED)
-    find_package(SDL2_image REQUIRED)
-    target_include_directories(PixelGameEngine PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-    target_link_libraries(PixelGameEngine ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 endif()
