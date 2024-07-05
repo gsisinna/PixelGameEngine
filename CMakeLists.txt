@@ -21,6 +21,9 @@ add_executable(PixelGameEngine
     main.cpp
 )
 
+# Target include directories
+target_include_directories(PixelGameEngine PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/include/SDL2/include)
+
 # Link SDL2 libraries
 if(WIN32)
     # On Windows, link with the prebuilt SDL2 libraries
@@ -38,7 +41,6 @@ if(WIN32)
 else()
     # On non-Windows platforms, find and link SDL2 dynamically
     find_package(SDL2 REQUIRED)
-
     target_include_directories(PixelGameEngine PRIVATE ${SDL2_INCLUDE_DIRS})
     target_link_libraries(PixelGameEngine ${SDL2_LIBRARIES})
 endif()
