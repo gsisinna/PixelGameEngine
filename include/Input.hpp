@@ -5,11 +5,11 @@
 
 class Input {
 public:
-    void Update();
-    bool IsQuit() const;
+  void Update();
+  bool IsQuit() const;
 
 private:
-    bool quit;
+  bool quit;
 };
 
 #endif // INPUT_HPP
